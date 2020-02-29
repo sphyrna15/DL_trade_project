@@ -6,6 +6,7 @@ Gold closing prices daily analysis
 
 @author: timla
 """
+from split_data import sliding_windows
 
 import numpy as np
 import pandas as pd
@@ -23,27 +24,24 @@ data = pd.read_csv(path + filename )
 # data.drop('EURO (AM)' , axis = 1, inplace = True)
 # data.drop('EURO (PM)' , axis = 1, inplace = True)
 # data.drop('USD (PM)', axis = 1, inplace = True)
-# data = data.drop('Date', axis = 1, inplace = True)
-
 
 #Rearrange data to get plot in correct order
 
 data = data.iloc[::-1]
 data = data.reset_index()
-data.drop('index', axis = 1, inplace = True)
+data.drop('Date', axis = 1, inplace = True)
 
-
-prices = data.to_numpy()
+data2 = data.to_numpy()
+prices = np.delete(data2, obj =  0, axis = 1)
 
 #plot imported dataset
 
-plt.plot(prices[:,0])
-plt.xlabel("Date")
-plt.ylabel("Prices")
+# plt.plot(prices[:,0])
+# plt.xlabel("Date")
+# plt.ylabel("Prices")
 
-plt.show()
+# plt.show()
 
-
-# def sliding_windows(data, window_size):
+x, y = sliding_windows(prices, wsize = 30, stepsize = 1)
     
 
