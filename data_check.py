@@ -43,5 +43,8 @@ prices = np.delete(data2, obj =  0, axis = 1)
 # plt.show()
 
 x, y = sliding_windows(prices, wsize = 30, stepsize = 1)
+
+x = np.transpose(x)
+y = np.transpose(y)
     
 
