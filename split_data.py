@@ -15,10 +15,9 @@ class Dataprep():
     from Quandl.com or similar platforms"""
     
     
-    def __init__(self, input_shape):
+    def __init__(self):
         """ Initialize useful default object variables """
         
-        self.input_shape = input_shape
         self.steps = 1
         self.test_percent = 0.1
         
@@ -71,6 +70,9 @@ class Dataprep():
         
             sliced_data[:, j] = data[j : j + wsize, 0]
             labels[0, j] = data[j + wsize+1, 0]
+        
+        sliced_data = np.transpose(sliced_data)
+        labels = np.transpose(labels)
             
         return sliced_data, labels
     
@@ -99,14 +101,47 @@ class Dataprep():
             
         if validation == False and val_percent != None:
             raise ValueError("Recieved unexpected value for val_percent - no input for validation percentage required")
-            
+
+        if validation == True and val_percent == None:
+            raise ValueError("Missing one required argument: val_percent")  
+
         if labels.ndim != data.ndim:
             raise ValueError("Dimensions of data and labels dot not agree")
             
         if test_percent <= 0 or test_percent >= 1:
             raise ValueError("test_percent is out of range, should be between 0 and 1")
             
-        
-        
-        
-        return None
+        num_examples = data.shape[0] 
+        num_test_examples = int(num_examples * test_percent)    # get number of test examples for indexing
+
+        # shuffle data and labels in unison
+        rng_state = np.random.get_state()
+        np.random.shuffle(data)
+        np.random.set_state(rng_state)
+        np.random.shuffle(labels)
+
+        # now, reindex the datasets into train and test sets
+        if validation == False:
+            x_test = data[:num_test_examples, : ]
+            y_test = labels[:num_test_examples, :]
+            
+            x_train = data[num_test_examples:, : ]
+            y_train = labels[num_test_examples:, : ]
+
+            return x_train, y_train, x_test, y_test
+
+        # If a validation set is wanted, reindex accordingly
+        num_val_examples = int(num_examples * val_percent)
+        val_index = num_test_examples + num_val_examples
+
+        x_test = data[ : num_test_examples, : ]
+        y_test = labels[:num_test_examples, :]
+
+        x_val = data[num_test_examples : val_index, : ]
+        y_val = labels[num_test_examples : val_index, : ]
+
+        x_train = data[val_index : , : ]
+        y_train = labels[val_index : , : ]
+
+                
+        return x_train, y_train, x_test, y_test, x_val, y_val

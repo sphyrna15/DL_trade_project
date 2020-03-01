@@ -6,7 +6,7 @@ Gold closing prices daily analysis
 
 @author: timla
 """
-from split_data import sliding_windows
+from split_data import Dataprep
 
 import numpy as np
 import pandas as pd
@@ -31,8 +31,8 @@ data = data.iloc[::-1]
 data = data.reset_index()
 data.drop('Date', axis = 1, inplace = True)
 
-data2 = data.to_numpy()
-prices = np.delete(data2, obj =  0, axis = 1)
+data = data.to_numpy()
+prices = np.delete(data, obj =  0, axis = 1)
 
 #plot imported dataset
 
@@ -42,9 +42,9 @@ prices = np.delete(data2, obj =  0, axis = 1)
 
 # plt.show()
 
-x, y = sliding_windows(prices, wsize = 30, stepsize = 1)
+prep = Dataprep()
+x, y = prep.sliding_windows(data = prices, wsize = 30, stepsize = 1)
 
-x = np.transpose(x)
-y = np.transpose(y)
+x_train, y_train, x_test, y_test, x_val, y_val = prep.train_test_split(x, y, test_percent = 0.2, validation = True, val_percent = 0.1)
     
 
