@@ -20,9 +20,10 @@ class Dataprep():
         
         self.steps = 1
         self.test_percent = 0.1
+        self.scale_types = ("MinMax", "Standard")
         
     
-    def sliding_windows(self, data, wsize, stepsize = None):
+    def sliding_windows(self, data, wsize, stepsize = None, rnn = False):
         """
         Parameters
         ----------
@@ -30,8 +31,10 @@ class Dataprep():
             contains data to be sliced into sets
         wsize : integer
             window size for input data of network
-        stepsize: integer
+        stepsize : integer
             window sliding distance
+        rnn : bool
+            data to be reshaped for rnn/lstm -> wsize will be num_timesteps
             
         test and training examples that are sliced into wsize long windows as input
         labeled with the next time step after window ends
@@ -39,7 +42,7 @@ class Dataprep():
         returns: sliced dataset for training, labels
         """
         if stepsize == None:
-            stepsize = self.stepsize
+            stepsize = self.steps
         
         if 2 < data.ndim:
             raise ValueError("Incorrect number of dimensions: expected 2")
@@ -49,6 +52,9 @@ class Dataprep():
             
         if wsize > data.shape[0]:
             raise ValueError("Window size cannot exceed  data array size")
+
+        if rnn and stepsize > 1:
+            raise ValueError("RNN data must have coherent timesteps (wsize), stepsize cannot exceed 1")
         
         length = data.shape[0]                         # compute length of data sequence
         steprest = (length - wsize) % stepsize         # find out correction for window size
@@ -73,7 +79,10 @@ class Dataprep():
         
         sliced_data = np.transpose(sliced_data)
         labels = np.transpose(labels)
-            
+
+        if rnn == True:
+            sliced_data = np.reshape(sliced_data, (sliced_data.shape[0], sliced_data.shape[1], 1))
+                    
         return sliced_data, labels
     
     
@@ -145,3 +154,38 @@ class Dataprep():
 
                 
         return x_train, y_train, x_test, y_test, x_val, y_val
+
+    def scaling(self, data, scale_type):
+        """
+        Parameters
+        ----------
+        data : numpy array
+            contains data to be split into train, test (and validation) sets
+        scale_type : string
+            type of scaling to be applied (MinMax, ...)
+                    
+        Returns
+        -------
+        scaled data 
+        """
+
+        if scale_type not in self.scale_types:
+            raise ValueError("Not a valid or recognized scaling method")
+
+        if scale_type == "MinMax": # MinMax scaling on interval (0,1)
+            from sklearn.preprocessing import MinMaxScaler
+
+            scaler = MinMaxScaler(feature_range = (0,1))
+            scaled_data = scaler.fit_transform(data)
+            return scaled_data
+
+        if scale_type == "Standard":   # Standard scaling
+            from sklearn.preprocessing import StandardScaler
+            
+            scaler = StandardScaler()
+            scaled_data = scaler.fit_transform(data)
+            return scaled_data
+
+        
+
+        
