@@ -3,8 +3,8 @@
 Create first LSTM prediction system in Keras
 
 """
-from data_import import x_train , y_train, scaler
-from Myplot_class import Myplot
+
+from data_import import x_train , y_train
 
 from tensorflow import keras
 
@@ -29,9 +29,13 @@ model.add(keras.layers.Dropout(0.2))
 # Adding the output layer
 model.add(keras.layers.Dense(units = 1))
 
-model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics = ['accuracy'])
+# Prepare optimizer
+optimizer = keras.optimizers.Adam(lr = 0.0075, amsgrad = True)
 
-model.fit(x_train, y_train, epochs = 1, batch_size = 32)
+model.compile(optimizer = optimizer, loss = 'mean_squared_error', metrics = ['accuracy'])
+
+history = model.fit(x_train, y_train, epochs = 25, batch_size = 32)
+
     
 
 
