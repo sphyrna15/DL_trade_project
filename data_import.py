@@ -14,16 +14,11 @@ import matplotlib.pyplot as plt
 
 
 path = r"C:\Users\timla\Documents\Deep Learning Projects\Data"
-filename = r"\LBMA-GOLD.csv"
+filename = r"\OPEC-ORB.csv"
 
 #Import dataset and drop irrelevant data
 data = pd.read_csv(path + filename )
 
-# data.drop('GBP (AM)' , axis = 1, inplace = True)
-# data.drop('GBP (PM)' , axis = 1, inplace = True)
-# data.drop('EURO (AM)' , axis = 1, inplace = True)
-# data.drop('EURO (PM)' , axis = 1, inplace = True)
-# data.drop('USD (PM)', axis = 1, inplace = True)
 
 #Rearrange data to get plot in correct order
 
@@ -39,7 +34,6 @@ prices = np.delete(data, obj =  0, axis = 1)
 # plt.plot(prices[:,0])
 # plt.xlabel("Date")
 # plt.ylabel("Prices")
-
 # plt.show()
 
 prep = Dataprep()
