@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 
 path = r"C:\Users\timla\Documents\Deep Learning Projects\Data"
-filename = r"\OPEC-ORB.csv"
+filename = r"\LBMA-GOLD.csv"
 
 #Import dataset and drop irrelevant data
 data = pd.read_csv(path + filename )
@@ -43,9 +43,15 @@ prices = np.delete(data, obj =  0, axis = 1)
 # plt.show()
 
 prep = Dataprep()
-scaled_data = prep.scaling(prices, "MinMax")
-x, y = prep.sliding_windows(data = scaled_data, wsize = 60, stepsize = 1, rnn = True)
+scaled_data, scaler = prep.scaling(prices, "MinMax")
 
-#x_train, y_train, x_test, y_test, x_val, y_val = prep.train_test_split(x, y, test_percent = 0.2, validation = True, val_percent = 0.1)
+x_train , y_train = prep.sliding_windows(data = scaled_data, wsize = 60, stepsize = 1)
+
+x_train, y_train, x_test, y_test = prep.train_test_split(x_train, y_train, train_percent = 0.9)
+
+x_train = prep.rnn_reshape(x_train)
+x_test = prep.rnn_reshape(x_test)
+
+
     
 

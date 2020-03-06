@@ -19,11 +19,11 @@ class Dataprep():
         """ Initialize useful default object variables """
         
         self.steps = 1
-        self.test_percent = 0.1
+        self.train_percent = 0.9
         self.scale_types = ("MinMax", "Standard")
         
     
-    def sliding_windows(self, data, wsize, stepsize = None, rnn = False):
+    def sliding_windows(self, data, wsize, stepsize = None):
         """
         Parameters
         ----------
@@ -52,9 +52,7 @@ class Dataprep():
             
         if wsize > data.shape[0]:
             raise ValueError("Window size cannot exceed  data array size")
-
-        if rnn and stepsize > 1:
-            raise ValueError("RNN data must have coherent timesteps (wsize), stepsize cannot exceed 1")
+        
         
         length = data.shape[0]                         # compute length of data sequence
         steprest = (length - wsize) % stepsize         # find out correction for window size
@@ -79,14 +77,11 @@ class Dataprep():
         
         sliced_data = np.transpose(sliced_data)
         labels = np.transpose(labels)
-
-        if rnn == True:
-            sliced_data = np.reshape(sliced_data, (sliced_data.shape[0], sliced_data.shape[1], 1))
                     
         return sliced_data, labels
     
     
-    def train_test_split(self, data, labels, test_percent = None, validation = False, val_percent = None):
+    def train_test_split(self, data, labels ,shuffle = False, train_percent = None, validation = False, val_percent = None):
         """
         Parameters
         ----------
@@ -94,8 +89,10 @@ class Dataprep():
             contains data to be split into train, test (and validation) sets
         labels : numpy array
             corresponding labels for data
-        test_percent : integer between zero and one
-            percentage of dataset to be used as test set
+        shuffle : bool
+            shuffle data or not
+        train_percent : integer between zero and one
+            percentage of dataset to be used as train set
         validation : bool
             False - do not output a validation set
         val_percent : integer between zero and one
@@ -105,8 +102,8 @@ class Dataprep():
         -------
         x_train, y_train, x_test, y_test (optional: x_val, y_val) 
         """
-        if test_percent == None:
-            test_percent = self.test_percent
+        if train_percent == None:
+            train_percent = self.train_percent
             
         if validation == False and val_percent != None:
             raise ValueError("Recieved unexpected value for val_percent - no input for validation percentage required")
@@ -117,40 +114,41 @@ class Dataprep():
         if labels.ndim != data.ndim:
             raise ValueError("Dimensions of data and labels dot not agree")
             
-        if test_percent <= 0 or test_percent >= 1:
-            raise ValueError("test_percent is out of range, should be between 0 and 1")
+        if train_percent <= 0 or train_percent >= 1:
+            raise ValueError("train_percent is out of range, should be between 0 and 1")
             
         num_examples = data.shape[0] 
-        num_test_examples = int(num_examples * test_percent)    # get number of test examples for indexing
+        num_train_examples = int(num_examples * train_percent)    # get number of train examples for indexing
 
         # shuffle data and labels in unison
-        rng_state = np.random.get_state()
-        np.random.shuffle(data)
-        np.random.set_state(rng_state)
-        np.random.shuffle(labels)
+        if shuffle:
+            rng_state = np.random.get_state()
+            np.random.shuffle(data)
+            np.random.set_state(rng_state)
+            np.random.shuffle(labels)
 
-        # now, reindex the datasets into train and test sets
-        if validation == False:
-            x_test = data[:num_test_examples, : ]
-            y_test = labels[:num_test_examples, :]
+        # now, reindex the datasets into train and train sets
+        if not validation:
+            x_train = data[ : num_train_examples, : ]
+            y_train = labels[ : num_train_examples, :]
             
-            x_train = data[num_test_examples:, : ]
-            y_train = labels[num_test_examples:, : ]
+            x_test = data[num_train_examples : , : ]
+            y_test = labels[num_train_examples : , : ]
 
             return x_train, y_train, x_test, y_test
 
         # If a validation set is wanted, reindex accordingly
         num_val_examples = int(num_examples * val_percent)
-        val_index = num_test_examples + num_val_examples
+        val_index = num_train_examples + num_val_examples
 
-        x_test = data[ : num_test_examples, : ]
-        y_test = labels[:num_test_examples, :]
+        x_train = data[ : num_train_examples, : ]
+        y_train = labels[ : num_train_examples, :]
 
-        x_val = data[num_test_examples : val_index, : ]
-        y_val = labels[num_test_examples : val_index, : ]
+        x_val = data[num_train_examples : val_index, : ]
+        y_val = labels[num_train_examples : val_index, : ]
 
-        x_train = data[val_index : , : ]
-        y_train = labels[val_index : , : ]
+        x_test = data[val_index : , : ]
+        y_test = labels[val_index : , : ]
 
                 
         return x_train, y_train, x_test, y_test, x_val, y_val
@@ -160,13 +158,13 @@ class Dataprep():
         Parameters
         ----------
         data : numpy array
-            contains data to be split into train, test (and validation) sets
+            contains data to be scaled
         scale_type : string
             type of scaling to be applied (MinMax, ...)
                     
         Returns
         -------
-        scaled data 
+        scaled data, scaler
         """
 
         if scale_type not in self.scale_types:
@@ -177,14 +175,40 @@ class Dataprep():
 
             scaler = MinMaxScaler(feature_range = (0,1))
             scaled_data = scaler.fit_transform(data)
-            return scaled_data
+            return scaled_data, scaler
 
         if scale_type == "Standard":   # Standard scaling
             from sklearn.preprocessing import StandardScaler
             
             scaler = StandardScaler()
             scaled_data = scaler.fit_transform(data)
-            return scaled_data
+            return scaled_data, scaler
+
+    def inverse_scaling(self, data, scaler):
+        """
+        Parameters
+        ----------
+        data : numpy array
+            contains data to be reverse scaled
+        scaler : sklearn.preprocessing object
+            scale object used to scale the data, returned by Dataprep.scaling()
+                    
+        Returns
+        -------
+        inverse scaled data 
+        """
+
+        return scaler.inverse_transform(data)
+
+    def rnn_reshape(self, data, to_rnn = True):
+        """ Reshape data for keras recurrent network layers
+        Parameter : data (numpy array) to be reshaped 
+        to_rnn (bool) : True -> reshape to RNN shape, Flase -> reshape back to normal from RNN shape """
+
+        if to_rnn:
+            return np.reshape(data, (data.shape[0], data.shape[1], 1))
+
+        return np.reshape(data, (data.shape[0], data.shape[1]))
 
         
 
