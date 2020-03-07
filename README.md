@@ -22,9 +22,9 @@ I plan on comparing and experimenting with the following methods:
  In the file keras_LSTM1.py, I have created my first keras LSTM model for predicing daily Oil prices, trained on a BatchSize of 32 and in only 25 epochs, it achieves the following results: 
  
 
-![First LSTM model tested](https://github.com/sphyrna15/DL_trade_project/blob/master/Model Evaluation/OPEC_LSTM1.png) 
+![First LSTM model tested](https://github.com/sphyrna15/DL_trade_project/blob/master/Model%20Evaluation/OPEC_LSTM1.png) 
 
 I recently also tested how well a model can generalize between financial assets. The following figure shows two models: one that was trained on daily Oil prices for 50 epochs and one that was only trained on the same dataset for 1 epoch (control model). Both models were used to predict Gold prices (also daily):
 
 
-![Transfer learning: trained on Oil, evaluated on Gold](https://github.com/sphyrna15/DL_trade_project/blob/master/Model Evaluation/Oil-Gold_LSTM.png)
+![Transfer learning: trained on Oil, evaluated on Gold](https://github.com/sphyrna15/DL_trade_project/blob/master/Model%20Evaluation/Oil-Gold_LSTM.png)
