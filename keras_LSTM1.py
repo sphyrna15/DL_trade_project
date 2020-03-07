@@ -34,7 +34,18 @@ optimizer = keras.optimizers.Adam(lr = 0.0075, amsgrad = True)
 
 model.compile(optimizer = optimizer, loss = 'mean_squared_error', metrics = ['accuracy'])
 
-history = model.fit(x_train, y_train, epochs = 25, batch_size = 32)
+history = model.fit(x_train, y_train, epochs = 1, batch_size = 32)
+
+
+modelpath = r"C:\Users\timla\Documents\Deep Learning Projects\Trading\Models\keras_lstm1.h5"
+
+# #to save the model, type:
+# model.save(modelpath)
+
+# # to restore the model, type:
+# keras.models.load_model(modelpath)
+
+
 
     
 

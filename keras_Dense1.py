@@ -5,7 +5,7 @@ Created on Sun Mar  1 17:21:33 2020
 First DNN Model to try to approximate time series input of daily price data
 """
 
-from data_import import x_train , y_train
+from data_import import x_train , y_train, x_val, y_val
 from dataprep_class import Dataprep
 
 from tensorflow import keras
@@ -28,4 +28,4 @@ x_train = prep.rnn_reshape(data = x_train, to_rnn = False)
 
 
 
-history = model.fit(x_train, y_train, epochs = 25, batch_size = 32)
+history = model.fit(x_train, y_train, epochs = 150, batch_size = 32, validation_data = (x_val, y_val))

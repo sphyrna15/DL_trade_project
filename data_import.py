@@ -29,8 +29,15 @@ data.drop('Date', axis = 1, inplace = True)
 data = data.to_numpy()
 prices = np.delete(data, obj =  0, axis = 1)
 
-#plot imported dataset
+# #for gold
+# prices = np.delete(prices, obj = -1, axis = 1)
+# prices = np.delete(prices, obj = -1, axis = 1)
+# prices = np.delete(prices, obj = -1, axis = 1)
+# prices = np.delete(prices, obj = -1, axis = 1)
+# prices = np.delete(prices, obj = -1, axis = 1)
 
+
+# #plot imported dataset
 # plt.plot(prices[:,0])
 # plt.xlabel("Date")
 # plt.ylabel("Prices")
@@ -39,7 +46,7 @@ prices = np.delete(data, obj =  0, axis = 1)
 prep = Dataprep()
 scaled_data, scaler = prep.scaling(prices, "MinMax")
 
-x_train , y_train = prep.sliding_windows(data = scaled_data, wsize = 60, stepsize = 1)
+x_train , y_train = prep.sliding_windows(scaled_data, wsize = 60, stepsize = 1)
 
 x_train, y_train, x_test, y_test = prep.train_test_split(x_train, y_train, train_percent = 0.9)
 
