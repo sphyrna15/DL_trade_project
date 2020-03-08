@@ -3,11 +3,9 @@
 Create first LSTM prediction system in Keras
 
 """
-
 from data_import import x_train , y_train
 
 from tensorflow import keras
-
 
 model = keras.models.Sequential()
 

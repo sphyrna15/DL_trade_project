@@ -3,8 +3,6 @@
 Goal: Advance keras knowledge - get into hyperparameters, tensorboard and clean up code
 
 """
-
-
 import tensorflow as tf
 from tensorflow import keras
 
