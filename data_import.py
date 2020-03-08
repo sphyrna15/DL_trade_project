@@ -48,10 +48,11 @@ scaled_data, scaler = prep.scaling(prices, "MinMax")
 
 x_train , y_train = prep.sliding_windows(scaled_data, wsize = 60, stepsize = 1)
 
-x_train, y_train, x_test, y_test = prep.train_test_split(x_train, y_train, train_percent = 0.9)
+x_train, y_train, x_test, y_test, x_val, y_val = prep.train_test_split(x_train, y_train, train_percent = 0.8, validation = True, val_percent = 0.1)
 
 x_train = prep.rnn_reshape(x_train)
 x_test = prep.rnn_reshape(x_test)
+x_val = prep.rnn_reshape(x_val)
 
 
     
