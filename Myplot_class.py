@@ -66,3 +66,49 @@ class Myplot():
         plt.show()
 
         return None
+
+    def pred_examples(self, x_test, real_prices, predictions, indices):
+        """
+        Parameters
+        ----------
+        x_test : numpy array
+            tested data for visualization
+        real_prices : numpy array
+            Real prices of the examples
+        predicted_prices : numpy array
+            Prediction examples
+        indices : python list
+            list of indices to plot
+                
+        Attention :
+        All points in the price arrays will be plotted in subplots - don't use too many
+        make sure that the arrays are of equal length
+        -------
+        returns: Nothing, just plots figure
+        """
+
+        length = len(indices)
+        wsize = x_test.shape[1]
+        x_show = x_test[:, wsize - 21 : ]
+
+        if length != 6:
+            raise ValueError("Only 6 examples can be plotted at once")
+
+        figure, axes = plt.subplots(2, 3)
+        k = 0
+
+        for i in range(6):
+            if i > 2:
+                k = 1
+                i = i%3
+            j = indices[i]
+            
+            axes[k,i].plot(x_show[j, :], label = 'Price Histroy')
+            axes[k,i].plot(21, real_prices[j], 'go', label = 'Future Price')
+            axes[k,i].plot(21, predictions[j], 'r+', label = 'Predicted Price')
+            axes[k,i].set_title(label = str(j))
+            axes[k,i].set_xlabel('Time')
+            axes[k,i].set_ylabel('Price')
+
+
+
