@@ -96,12 +96,13 @@ class Myplot():
 
         figure, axes = plt.subplots(2, 3)
         k = 0
+        t = 0
 
         for i in range(6):
             if i > 2:
                 k = 1
                 i = i%3
-            j = indices[i]
+            j = indices[t]; t += 1
             
             axes[k,i].plot(x_show[j, :], label = 'Price Histroy')
             axes[k,i].plot(21, real_prices[j], 'go', label = 'Future Price')
@@ -109,6 +110,7 @@ class Myplot():
             axes[k,i].set_title(label = str(j))
             axes[k,i].set_xlabel('Time')
             axes[k,i].set_ylabel('Price')
-
+            axes[k,i].legend()
+            axes[k,i].grid()
 
 

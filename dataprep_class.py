@@ -185,7 +185,7 @@ class Dataprep():
             return scaled_data, scaler
 
     def inverse_scaling(self, data, scaler):
-        """
+        r"""
         Parameters
         ----------
         data : numpy array
