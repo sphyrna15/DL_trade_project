@@ -6,6 +6,7 @@ Create training, validation and test sets with the imported numpy data
 
 """
 import numpy as np
+import quandl
 
 
 class Dataprep():
@@ -209,6 +210,29 @@ class Dataprep():
             return np.reshape(data, (data.shape[0], data.shape[1], 1))
 
         return np.reshape(data, (data.shape[0], data.shape[1]))
+    
+    def pd_to_np(data, colidx):
+        """ handle QUANDL pandas dataframes and return clean 1-dim numpy array 
+        Parameters: 
+            data : pd dataframe
+            colidx : collum index of dataframe """
+        
+        if colidx > data.shape[1]:
+            raise ValueError("Index out of bounds, found shape " + str(data.shape))
+        
+        data = data.iloc[::-1]
+        data = data.reset_index()
+        data.drop('Date', axis = 1, inplace = True)
+        colidx -= 1
+        
+        data = data.to_numpy()
+        data = data[:, colidx]
+        
+        return data
+        
+        
+        
+        
 
         
 

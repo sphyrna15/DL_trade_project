@@ -112,5 +112,8 @@ class Myplot():
             axes[k,i].set_ylabel('Price')
             axes[k,i].legend()
             axes[k,i].grid()
+        plt.show()
+        
+        return None
 
 
