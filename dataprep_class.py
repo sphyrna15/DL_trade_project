@@ -6,7 +6,6 @@ Create training, validation and test sets with the imported numpy data
 
 """
 import numpy as np
-import quandl
 
 
 class Dataprep():
@@ -211,7 +210,7 @@ class Dataprep():
 
         return np.reshape(data, (data.shape[0], data.shape[1]))
     
-    def pd_to_np(data, colidx):
+    def pd_to_np(self, data, colidx):
         """ handle QUANDL pandas dataframes and return clean 1-dim numpy array 
         Parameters: 
             data : pd dataframe
@@ -228,7 +227,18 @@ class Dataprep():
         data = data.to_numpy()
         data = data[:, colidx]
         
-        return data
+        return data.reshape((-1,1))
+    
+    def concat(self, data1, data2):
+        """ Concatenate two arrays of dimension (None, 1) 
+        Parameters:
+            data1 and data2 : numpy arrays """
+        
+        data = np.concatenate((data1, data2), axis = 0)
+        
+        return data.reshape((-1,1)) 
+            
+        
         
         
         
