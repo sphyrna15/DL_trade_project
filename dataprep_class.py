@@ -227,6 +227,8 @@ class Dataprep():
         data = data.to_numpy()
         data = data[:, colidx]
         
+        data = np.flip(data, axis = 0)
+        
         return data.reshape((-1,1))
     
     def concat(self, data1, data2):

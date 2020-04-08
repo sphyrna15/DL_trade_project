@@ -115,5 +115,49 @@ class Myplot():
         plt.show()
         
         return None
+    
+    def multistep(self, history, real_prices, predictions):
+        """
+        Parameters
+        ----------
+        history : numpy array
+            tested data for visualization
+        real_prices : numpy array
+            Real prices of the examples
+        predictions : numpy array
+            Prediction examplest
+        -------
+        returns multivariate timestep plot
+        """
+        
+        num_steps = predictions.shape[1]
+        if num_steps != real_prices.shape[1]:
+            raise ValueError("real_prices and predictions size does not agree")
+        
+        wsize = history.shape[1]
+        if wsize <= 21:
+            idx = 0
+            gridstart = wsize
+        else:
+            idx = wsize - 21
+            gridstart = 21
+        show = history[:, idx :]
+        
+        grid = []
+        for k in range(num_steps):
+            grid.append(gridstart+k)
+            
+        plt.figure()
+        plt.plot(grid, real_prices.T, 'go', label = "real future prices")
+        plt.plot(grid, predictions.T, 'r+', label = 'predicted prices')
+        plt.plot(show.T, '-k', label = "price history")
+        plt.title("Multivariate forecast")
+        plt.xlabel("Time")
+        plt.ylabel("Price")
+        plt.legend(loc="best")
+        plt.grid()
+        plt.show()
+        
+        
 
 
